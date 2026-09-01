@@ -37,11 +37,22 @@ export default function App() {
   }, [path]);
 
   const isAdmin = path.startsWith('/admin');
-  if (isAdmin) {
-    if (authLoading) return <FullLoader />;
-    if (role !== 'admin') return <AccessDenied />;
-    return <AdminApp onExit={() => { window.history.pushState({}, '', '/'); setPath('/'); }} />;
-  }
+
+if (isAdmin) {
+  if (authLoading) return <FullLoader />;
+
+  if (role !== 'admin') return <AccessDenied />;
+
+  return (
+    <AdminApp
+      onExit={() => {
+        window.history.pushState({}, '', '/');
+        setPath('/');
+        window.scrollTo(0, 0);
+      }}
+    />
+  );
+}
 
   const route = pathToRoute(path);
   const navigate = (next: Route, slug?: string) => {

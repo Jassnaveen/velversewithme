@@ -13,8 +13,13 @@ type AdminPage = 'dashboard' | 'products' | 'categories' | 'orders' | 'shipping'
 
 export function AdminApp({ onExit }: { onExit: () => void }) {
   const { profile, signOut } = useAuth();
-  const [page, setPage] = useState<AdminPage>('dashboard');
+  const [page, setPage] = useState(() => {
+  return localStorage.getItem('velverse_admin_page') || 'dashboard';
+});
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  useEffect(() => {
+  localStorage.setItem('velverse_admin_page', page);
+}, [page]);
 
   const navItems: [AdminPage, string, typeof LayoutDashboard][] = [
     ['dashboard', 'Dashboard', LayoutDashboard],
