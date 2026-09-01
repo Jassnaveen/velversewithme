@@ -181,7 +181,8 @@ function Shop({ onProduct, onAdd, wishlist, toggleWishlist }: { onProduct: (s: s
       if (sort === 'Price: High') return getEffectivePrice(b) - getEffectivePrice(a);
       return 0;
     });
-  return <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8 lg:py-20"><div className="flex flex-col justify-between gap-8 border-b border-charcoal/10 pb-10 lg:flex-row lg:items-end"><div><p className="eyebrow">The full collection</p><h1 className="mt-4 font-serif text-6xl leading-none">Shop with intention.</h1><p className="mt-4 max-w-lg leading-7 text-charcoal/60">Objects for your altar, your home, and the moments that matter.</p></div><div className="relative w-full max-w-sm border-b border-charcoal/30 pb-3"><Search size={17} className="inline text-charcoal/50" /><input value={search} onChange={(e) => setSearch(e.target.value)} className="ml-3 bg-transparent text-sm outline-none" placeholder="Search the collection" /></div></div><div className="mt-8 flex flex-wrap items-center justify-between gap-4"><div className="flex flex-wrap gap-2">{['All', ...cats.map((c) => c.name)].map((item) => <button key={item} onClick={() => setFilter(item)} className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] transition ${filter === item ? 'border-charcoal bg-charcoal text-white' : 'border-charcoal/15 hover:border-antique'}`}>{item}</button>)}</div><label className="flex items-center gap-2 text-xs text-charcoal/60">Sort by <select value={sort} onChange={(e) => setSort(e.target.value)} className="bg-transparent font-bold text-charcoal outline-none"><option>Featured</option><option>Price: Low</option><option>Price: High</option></select></label></div>{loading ? <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-charcoal/15 border-t-antique" /></div> : <div className="mt-10 grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">{filtered.map((p) => <ProductCard key={p.id} product={p} onProduct={onProduct} onAdd={onAdd} wished={wishlist.includes(p.id)} onWishlist={() => toggleWishlist(p.id)} />)}</div>}{!loading && filtered.length === 0 && <div className="py-24 text-center"><p className="font-serif text-3xl">Nothing found yet.</p><p className="mt-2 text-charcoal/55">Try a different search or collection.</p></div>}</div>;
+  return <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8 lg:py-20"><div className="flex flex-col justify-between gap-8 border-b border-charcoal/10 pb-10 lg:flex-row lg:items-end"><div><p className="eyebrow">The full collection</p><h1 className="mt-4 font-serif text-6xl leading-none">Shop with intention.</h1><p className="mt-4 max-w-lg leading-7 text-charcoal/60">Objects for your altar, your home, and the moments that matter.</p></div><div className="relative w-full max-w-sm border-b border-charcoal/30 pb-3"><Search size={17} className="inline text-charcoal/50" /><input value={search} onChange={(e) => setSearch(e.target.value)} className="ml-3 bg-transparent text-sm outline-none" placeholder="Search the collection" /></div></div><div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+    <div className="flex flex-wrap gap-2">{['All', ...cats.map((c) => c.name)].map((item) => <button key={item} onClick={() => setFilter(item)} className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] transition ${filter === item ? 'border-charcoal bg-charcoal text-white' : 'border-charcoal/15 hover:border-antique'}`}>{item}</button>)}</div><label className="flex items-center gap-2 text-xs text-charcoal/60">Sort by <select value={sort} onChange={(e) => setSort(e.target.value)} className="bg-transparent font-bold text-charcoal outline-none"><option>Featured</option><option>Price: Low</option><option>Price: High</option></select></label></div>{loading ? <div className="flex justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-2 border-charcoal/15 border-t-antique" /></div> : <div className="mt-10 grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">{filtered.map((p) => <ProductCard key={p.id} product={p} onProduct={onProduct} onAdd={onAdd} wished={wishlist.includes(p.id)} onWishlist={() => toggleWishlist(p.id)} />)}</div>}{!loading && filtered.length === 0 && <div className="py-24 text-center"><p className="font-serif text-3xl">Nothing found yet.</p><p className="mt-2 text-charcoal/55">Try a different search or collection.</p></div>}</div>;
 }
 
 function ProductDetailsPage({ slug, onBack, onAdd, wishlist, toggleWishlist, onProduct }: { slug: string; onBack: () => void; onAdd: (p: Product) => void; wishlist: string[]; toggleWishlist: (id: string) => void; onProduct: (s: string) => void }) {
@@ -278,7 +279,7 @@ function Login({ onNavigate }: { onNavigate: (r: Route) => void }) {
 }
 
 function AccountPage({ onNavigate }: { onNavigate: (r: Route) => void }) {
-  const { session, profile, signOut } = useAuth();
+  const { session, profile, role, signOut } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -288,10 +289,53 @@ function AccountPage({ onNavigate }: { onNavigate: (r: Route) => void }) {
       setOrders((data as Order[]) ?? []); setLoading(false);
     })();
   }, [session?.user?.id]);
+  
 
   if (!session) return <div className="mx-auto max-w-md px-5 py-20 text-center"><CircleUserRound size={40} className="mx-auto text-antique" /><h1 className="mt-5 font-serif text-4xl">Sign in to continue.</h1><p className="mt-3 text-charcoal/55">Access your orders, wishlist and saved addresses.</p><button onClick={() => onNavigate('login')} className="button-dark mt-6">Sign in / Register</button></div>;
 
-  return <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8 lg:py-20"><div className="flex items-center justify-between"><div><p className="eyebrow">Your space</p><h1 className="mt-4 font-serif text-5xl">Hello, {profile?.full_name ?? 'there'}.</h1></div><button onClick={async () => { await signOut(); onNavigate('home'); }} className="flex items-center gap-2 text-sm text-charcoal/55 hover:text-charcoal"><LogOut size={16} /> Sign out</button></div><div className="mt-12"><h2 className="font-serif text-3xl">Your orders</h2>{loading ? <div className="flex justify-center py-10"><div className="h-8 w-8 animate-spin rounded-full border-2 border-charcoal/15 border-t-antique" /></div> : orders.length === 0 ? <div className="py-16 text-center text-charcoal/40"><Package size={32} className="mx-auto" /><p className="mt-3">No orders yet.</p><button onClick={() => onNavigate('shop')} className="button-dark mt-4">Start shopping</button></div> : <div className="mt-6 space-y-3">{orders.map((o) => <div key={o.id} className="flex items-center justify-between rounded-xl border border-charcoal/10 bg-white p-5"><div><p className="font-semibold">{o.order_number}</p><p className="text-sm text-charcoal/50">{new Date(o.created_at).toLocaleDateString()} · {formatPrice(Number(o.total))}</p></div><div className="flex items-center gap-3"><span className="rounded-full bg-gold/10 px-3 py-1 text-xs font-bold capitalize text-antique">{o.status}</span><button onClick={() => onNavigate('track')} className="rounded-lg bg-charcoal px-4 py-2 text-xs font-semibold text-white hover:bg-antique">Track</button></div></div>)}</div>}</div></div>;
+ return (
+  <div className="mx-auto max-w-7xl px-5 py-14 lg:px-8 lg:py-20">
+
+    <div className="flex items-center justify-between">
+
+      <div>
+        <p className="eyebrow">Your space</p>
+
+        <h1 className="mt-4 font-serif text-5xl">
+          Hello, {profile?.full_name ?? 'there'}.
+        </h1>
+      </div>
+
+      <div className="flex items-center gap-3">
+
+        {/* ADMIN CONTROL PANEL */}
+        {role === 'admin' && (
+          <button
+            onClick={() => {
+              window.history.pushState({}, '', '/admin');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            className="rounded-lg bg-gold px-4 py-2 text-xs font-bold text-charcoal hover:opacity-90"
+          >
+            ⚙ OPEN CONTROL PANEL
+          </button>
+        )}
+
+        {/* SIGN OUT */}
+        <button
+          onClick={async () => {
+            await signOut();
+            onNavigate('home');
+          }}
+          className="flex items-center gap-2 text-sm text-charcoal/55 hover:text-charcoal"
+        >
+          <LogOut size={16} />
+          Sign out
+        </button>
+
+      </div>
+    </div>
+  <div className="mt-12"><h2 className="font-serif text-3xl">Your orders</h2>{loading ? <div className="flex justify-center py-10"><div className="h-8 w-8 animate-spin rounded-full border-2 border-charcoal/15 border-t-antique" /></div> : orders.length === 0 ? <div className="py-16 text-center text-charcoal/40"><Package size={32} className="mx-auto" /><p className="mt-3">No orders yet.</p><button onClick={() => onNavigate('shop')} className="button-dark mt-4">Start shopping</button></div> : <div className="mt-6 space-y-3">{orders.map((o) => <div key={o.id} className="flex items-center justify-between rounded-xl border border-charcoal/10 bg-white p-5"><div><p className="font-semibold">{o.order_number}</p><p className="text-sm text-charcoal/50">{new Date(o.created_at).toLocaleDateString()} · {formatPrice(Number(o.total))}</p></div><div className="flex items-center gap-3"><span className="rounded-full bg-gold/10 px-3 py-1 text-xs font-bold capitalize text-antique">{o.status}</span><button onClick={() => onNavigate('track')} className="rounded-lg bg-charcoal px-4 py-2 text-xs font-semibold text-white hover:bg-antique">Track</button></div></div>)}</div>}</div></div>);
 }
 
 function TrackOrder() {
